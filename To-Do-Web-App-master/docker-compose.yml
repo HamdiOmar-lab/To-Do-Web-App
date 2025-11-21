@@ -1,0 +1,35 @@
+services:
+ mongo:
+   image: mongo:5
+   container_name: todo-mongo
+   restart: unless-stopped
+   ports:
+     - "27017:27017"
+   volumes:
+     - todo-data:/data/db
+
+ backend:
+   build: ./server
+   container_name: todo-backend
+   ports:
+     - "8000:8000"
+   environment:
+     - PORT=8000
+     - DB_URL=mongodb://mongo:27017/todoapp
+   depends_on:
+     - mongo
+   restart: unless-stopped
+
+ frontend:
+   build: ./client
+   container_name: todo-frontend
+   ports:
+     - "3000:3000"
+   environment:
+     - REACT_APP_BACKEND_URL=http://localhost:8000
+   depends_on:
+     - backend
+   restart: unless-stopped
+
+volumes:
+ todo-data:
