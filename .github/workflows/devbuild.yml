@@ -43,3 +43,16 @@ jobs:
       # Étape optionnelle : afficher la branche pour vérification
       - name: Show current branch
         run: echo "Building branch $GITHUB_REF"
+
+       
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: build  # Attendre que le job 'build' soit terminé
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t my-react-app:dev .
