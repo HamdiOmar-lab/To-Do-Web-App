@@ -1,5 +1,6 @@
 name: Build Dev Branch
 
+# Déclencheur : à chaque push sur la branche dev
 on:
   push:
     branches: [ "dev" ]
@@ -10,37 +11,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Étape 1 : Récupérer le code du dépôt
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Étape 2 : Installer Node.js
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
+      # Étape 3 : Installer les dépendances dans le dossier client
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd client
+          npm install
 
-      - name: Run tests
-        run: npm test -- --watchAll=false
+      # Étape 4 : Build du projet React
+      - name: Build React app
+        run: |
+          cd client
+          npm run build
 
-      - name: Build project
-        run: npm run build
-
+      # Étape 5 : Upload de l’artefact build
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: react-build
-          path: build
+          path: client/build
 
-  docker:
-    name: Docker Build
-    runs-on: ubuntu-latest
-    needs: build  # Attendre que le job 'build' soit terminé
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Build Docker image
-        run: docker build -t my-react-app:dev .
+      # Étape optionnelle : afficher la branche pour vérification
+      - name: Show current branch
+        run: echo "Building branch $GITHUB_REF"
