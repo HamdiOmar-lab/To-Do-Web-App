@@ -2,7 +2,7 @@ name: Build Dev Branch
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "dev" ]
 
 jobs:
   build:
